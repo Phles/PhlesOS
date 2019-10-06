@@ -6,8 +6,8 @@
 #
 
 #Output directory for the cross compiler, must be absolute
-PREFIX32="$(HOME)/Desktop/PhlesOS/Compilers/binutils/bin32"
-PREFIX64="$(HOME)/Desktop/PhlesOS/Compilers/binutils/bin64"
+PREFIX32="$(HOME)/Desktop/PhlesOS/Compilers/bin32"
+PREFIX64="$(HOME)/Desktop/PhlesOS/Compilers/bin64"
 #Architecture of the compiled platform
 TARGET32="i386-elf"
 TARGET64="x86_64-elf"
@@ -44,12 +44,30 @@ update-binutils:
 ##########################################################################################################################################
 #Information about the GCC configuration
 GCCVer=9.2.0
+GCCBuildDir=./gcc/build
 RedZonePath=gcc/config/i386
 
 #x86-64 only, Modify the gcc configuration to have no red-zone: https://wiki.osdev.org/Libgcc_without_red_zone
 remove-RedZone: 
-	
-
+	echo 'Not Implemented'
+	#TODO, modify gcc configuration files
+#Build GCC Cross Compiler. 
+.gcc32:
+	mkdir $(GCCBuildDir) || true
+	rm -rf $(GCCBuildDir)/*
+	cd $(GCCBuildDir) && ../gcc-$(GCCVer)/configure --target=$(TARGET32) --prefix="$(PREFIX32)" --disable-nls --enable-languages=c,c++ --without-headers
+	cd $(GCCBuildDir) && make all-gcc
+	cd $(GCCBuildDir) && make all-target-libgcc
+	cd $(GCCBuildDir) && make install-gcc
+	cd $(GCCBuildDir) && make install-target-libgcc
+.gcc64:
+	mkdir $(GCCBuildDir) || true
+	rm -rf $(GCCBuildDir)/*
+	cd $(GCCBuildDir) && ../gcc-$(GCCVer)/configure --target=$(TARGET64) --prefix="$(PREFIX64)" --disable-nls --enable-languages=c,c++ --without-headers
+	cd $(GCCBuildDir) && make all-gcc
+	cd $(GCCBuildDir) && make all-target-libgcc
+	cd $(GCCBuildDir) && make install-gcc
+	cd $(GCCBuildDir) && make install-target-libgcc
 #GCC source via GNU's main mirror
 install-gcc:
 	mkdir gcc || true
@@ -64,7 +82,7 @@ install-gcc:
 sudo=sudo
 #Install command
 install=apt install
-#Install GCC and Binutils dependencies, links to information about each package are provided as available.s
+#Install GCC and Binutils dependencies, links to information about each package are provided as available
 install-dependencies:
 	#Parser-generator https://www.gnu.org/software/bison/
 	$(sudo) $(install) bison
@@ -79,4 +97,7 @@ install-dependencies:
 	#Documentation library https://www.gnu.org/software/texinfo/
 	$(sudo) $(install) texinfo
 
-
+#Install Everything
+install: install-dependencies install-binutils install-gcc 
+#Build everything for  32-bit and 64-bit machines specified by target variables. WARNING: this can take over an hour
+all: install .binutils32 .binutils64 .gcc32 .gcc64

@@ -1,3 +1,5 @@
+# Ignore directories under compilers
+Compilers/*/
+
+#Ignore other modules
 OS/
-Compilers/gcc/*
-Compilers/binutils/*
