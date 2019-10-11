@@ -6,8 +6,8 @@
 #
 
 #Output directory for the cross compiler, must be absolute
-PREFIX32="$(HOME)/Desktop/PhlesOS/Compilers/bin32"
-PREFIX64="$(HOME)/Desktop/PhlesOS/Compilers/bin64"
+PREFIX32="$(HOME)/Desktop/mount/PhlesOS/Compilers/bin32"
+PREFIX64="$(HOME)/Desktop/mount/PhlesOS/Compilers/bin64"
 #Architecture of the compiled platform
 TARGET32="i386-elf"
 TARGET64="x86_64-elf"
@@ -68,6 +68,8 @@ remove-RedZone:
 	cd $(GCCBuildDir) && make all-target-libgcc
 	cd $(GCCBuildDir) && make install-gcc
 	cd $(GCCBuildDir) && make install-target-libgcc
+
+gcc: .gcc32 .gcc64
 #GCC source via GNU's main mirror
 install-gcc:
 	mkdir gcc || true
